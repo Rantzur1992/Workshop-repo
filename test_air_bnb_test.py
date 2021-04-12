@@ -1,6 +1,7 @@
 from selenium.webdriver.common.by import By
 from src.testproject.classes import DriverStepSettings, StepSettings
 from src.testproject.decorator import report_assertion_errors
+from src.testproject.enums import TakeScreenshotConditionType, SleepTimingType
 from src.testproject.sdk.drivers import webdriver
 import pytest
 
@@ -10,7 +11,10 @@ def driver():
     driver = webdriver.Chrome(
                               project_name="Workshop Python",
                               job_name="Air BNB Test")
-    step_settings = StepSettings(timeout=15000)
+    step_settings = StepSettings(timeout=15000,
+                                 screenshot_condition=TakeScreenshotConditionType.Always,
+                                 sleep_time=2000,
+                                 sleep_timing_type=SleepTimingType.Before)
     with DriverStepSettings(driver, step_settings):
         yield driver
     driver.quit()
@@ -76,6 +80,4 @@ def test_main(driver):
     stays_in_hawaii = driver.find_element(By.XPATH,
                                           "//h1[. = 'Stays in Hawaii']")
     step_output = stays_in_hawaii.text
-    reporter.step(message="Taking a screenshot", description="This step checks the assertions",
-                  passed=True, screenshot=True)
     assert "Hawaii" in step_output
